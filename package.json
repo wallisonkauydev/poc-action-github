@@ -1,6 +1,10 @@
 {
   "name": "poc-action-github",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
@@ -12,7 +16,7 @@
     "turbo": "^2.0.14",
     "typescript": "^5.4.5"
   },
-  "packageManager": "pnpm@8.15.6",
+  "packageManager": "pnpm@8.15.3",
   "engines": {
     "node": ">=18"
   }
