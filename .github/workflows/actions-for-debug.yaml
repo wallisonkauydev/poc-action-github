@@ -1,17 +1,17 @@
 name: Publish Sacflow
-
 on:
   push:
     branches:
       - main
     paths:
       - "apps/server/**"
-  workflow_dispatch:
-
 jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        deploy_type: [core, write, read, public, worker]
 
     steps:
       - name: Checkout repository
@@ -19,17 +19,10 @@ jobs:
         with:
           sparse-checkout: "apps/server"
           sparse-checkout-cone-mode: false
-
-      - name: Setup flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          version: 0.2.40
-
-      - name: Setup PNPM
+      - name: setup PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 8.15.3
-
       - name: Cache PNPM store
         uses: actions/cache@v3
         with:
@@ -39,8 +32,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('apps/server/package.json') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-
-      - name: Install dependencies
+      - name: install dependencies
         run: |
-          cd apps/server
+          cd apps/server &&
           pnpm install
