@@ -1,8 +1,8 @@
 FROM node:20.5.0-alpine3.18
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/apps
 EXPOSE 3000
-COPY . .
+COPY apps/server .
 
 ENV DOCKERIZE_VERSION=v0.6.1
 RUN apk update --no-cache \
