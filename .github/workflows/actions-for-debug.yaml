@@ -37,3 +37,10 @@ jobs:
         run: |
           cd apps/server &&
           pnpm install
+      - name: use docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build docker image
+        run: |
+          docker buildx build -t sacflow-server:1.0 -f Dockerfile . &
+          docker buildx build -t sacflow-worker:1.0 -f Dockerfile.worker . &
+          wait
