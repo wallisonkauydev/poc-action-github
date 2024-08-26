@@ -1,4 +1,5 @@
-name: Publish Sacflow
+name: Build Docker Image
+
 on:
   push:
     branches:
@@ -6,13 +7,11 @@ on:
     paths:
       - "apps/server/**"
   workflow_dispatch:
+
 jobs:
-  deploy:
-    name: Deploy app
+  build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        deploy_type: [core, write, read, public, worker]
 
     steps:
       - name: Checkout repository
@@ -20,25 +19,10 @@ jobs:
         with:
           sparse-checkout: "apps/server"
           sparse-checkout-cone-mode: false
-      - name: setup PNPM
-        uses: pnpm/action-setup@v4
-        with:
-          version: 8.15.3
-      - name: Cache PNPM store
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pnpm-store
-            apps/server/node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('apps/server/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-      - name: install dependencies
-        run: |
-          cd apps/server &&
-          pnpm install
-      - name: use docker buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -46,6 +30,7 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - name: Build docker image
+
+      - name: Build Docker image
         run: |
-          cd apps/server &&
+          docker buildx build --cache-from=type=local,src=/tmp/.buildx-cache --cache-to=type=local,dest=/tmp/.buildx-cache -t my-image:latest apps/server
