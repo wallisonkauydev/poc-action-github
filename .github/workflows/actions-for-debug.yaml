@@ -17,9 +17,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          sparse-checkout: true
-          sparse-checkout-paths: |
-            apps/server
+          sparse-checkout: "apps/server"
+          sparse-checkout-cone-mode: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
