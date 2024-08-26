@@ -42,4 +42,4 @@ jobs:
       - name: Build docker image
         run: |
           cd apps/server && 
-          docker buildx build -t sacflow-server:1.0 -f apps/server/Dockerfile . &
+          docker buildx build -t sacflow-server:1.0 -f apps/server/Dockerfile .
