@@ -37,5 +37,4 @@ jobs:
           docker buildx build \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache \
-            --tag my-image:latest \
-            apps/server/Dockerfile
+            -t server:1.0 .
