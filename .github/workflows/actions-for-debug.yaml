@@ -33,4 +33,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-            cd apps/server && ls -la
+            cd apps/server && 
+            docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache \
+            --tag sacflow:1.0 \
+            -f Dockerfile \
+            .
