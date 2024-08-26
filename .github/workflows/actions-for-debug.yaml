@@ -34,9 +34,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker buildx build \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache \
-            --tag sacflow:1.0 \
-            --file Dockerfile \
-            .
+          docker buildx build -f Dockerfile -t sacflow:1.0 .
