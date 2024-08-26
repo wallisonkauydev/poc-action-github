@@ -1,24 +1,44 @@
-name: Build Docker Image
-
+name: Publish Sacflow
 on:
   push:
     branches:
       - main
     paths:
       - "apps/server/**"
-  workflow_dispatch:
-
 jobs:
-  build:
-    name: Build Docker Image
+  deploy:
+    name: Deploy app
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        deploy_type: [core, write, read, public, worker]
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           sparse-checkout: "apps/server"
           sparse-checkout-cone-mode: false
+
+      - name: setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.3
+
+      - name: cache PNPM
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            apps/server/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('apps/server/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm
+
+      - name: install dependencies
+        run: |
+          cd apps/server && pnpm install
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -33,10 +53,20 @@ jobs:
 
       - name: Build Docker image
         run: |
-            cd apps/server && 
-            docker buildx build \
+          cd apps/server && \
+          docker buildx build \
             --cache-from=type=local,src=/tmp/.buildx-cache \
             --cache-to=type=local,dest=/tmp/.buildx-cache \
             --tag sacflow:1.0 \
-            -f Dockerfile \
-            .
+            -f Dockerfile .
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        with:
+          version: 0.2.40
+
+      - name: Deploy Sacflow Server (WRITE, READ, PUBLIC, WORKERS and core)
+        run: |
+          cd apps/server && \
+          flyctl deploy --image sacflow:1.0 --c fly.${{ matrix.deploy-type }}.toml
+
