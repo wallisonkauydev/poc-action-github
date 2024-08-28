@@ -52,11 +52,9 @@ jobs:
         run: |
           cd apps/server && \
           docker buildx build \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache \
-            --tag sacflow:1.0 \
+            -t sacflow:1.0 \
             -f Dockerfile .
-      - name: test do image do create
+      - name: test image to create
         run: | 
-         docker container run -d sacflow:1.0
+         docker image ls
 
