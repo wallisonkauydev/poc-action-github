@@ -10,11 +10,7 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        deploy_type: [core, write, read, public, worker]
-    env:
-      FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,14 +56,8 @@ jobs:
             --cache-to=type=local,dest=/tmp/.buildx-cache \
             --tag sacflow:1.0 \
             -f Dockerfile .
-
-      - name: Setup flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          version: 0.2.40
-
-      - name: Deploy Sacflow Server (WRITE, READ, PUBLIC, WORKERS and core)
-        run: |
-          cd apps/server && \
-          flyctl deploy --image sacflow:1.0 --c fly.${{ matrix.deploy-type }}.toml
+      - name: test do image do create
+        run: | 
+         docker image ls 
+         
 
