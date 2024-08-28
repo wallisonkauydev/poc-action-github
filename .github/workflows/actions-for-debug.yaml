@@ -58,6 +58,5 @@ jobs:
             -f Dockerfile .
       - name: test do image do create
         run: | 
-         docker image ls 
-         
+         docker container run -d sacflow:1.0
 
